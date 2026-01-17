@@ -113,9 +113,9 @@ class IngestionPipeline:
 def main():
     """Main entry point."""
     # Path resolution relative to this script
-    # backend/project1_rag/ingest.py -> backend/data/sec_edgar_filings
+    # backend/project1_rag/ingest.py -> backend/data/sec-edgar-filings
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    DATA_DIR = os.path.join(BASE_DIR, "data", "sec_edgar_filings")
+    DATA_DIR = os.path.join(BASE_DIR, "data", "sec-edgar-filings")
     
     pipeline = IngestionPipeline(data_dir=DATA_DIR)
     pipeline.run()
