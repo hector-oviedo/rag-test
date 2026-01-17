@@ -51,9 +51,9 @@
     - [x] **HALT & VERIFY:** User runs sample query ("What are the export control risks for NVDA?") and validates the answer and sources. (Verified: System retrieves valid chunks and generates structured report).
 
 ## Phase 5: The Frontend Experience
-- [ ] **5.0 API Layer (Backend)**
-    - [ ] Add `fastapi` and `uvicorn`.
-    - [ ] Create `backend/main_api.py` to expose `RAGQueryEngine` via REST.
+- [x] **5.0 API Layer (Backend)**
+    - [x] Add `fastapi` and `uvicorn`.
+    - [x] Create `backend/main_api.py` to expose `RAGQueryEngine` via REST.
 - [ ] **5.1 Frontend Structure**
     - [ ] Ensure `frontend/src/components` exists and is used.
     - [ ] Setup API client in frontend to talk to backend.
