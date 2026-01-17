@@ -12,12 +12,12 @@
 - [x] **1.1 Project Initialization**
     - [ ] Initialize `backend` directory with `uv init`.
     - [ ] Create initial virtual environment and minimal dependency file.
-- [ ] **1.2 Container Orchestration**
-    - [ ] Create `docker-compose.yaml`.
-    - [ ] Configure **Qdrant** service (Ports 6333/6334, persistent volume).
-    - [ ] Configure **Ollama** service with GPU passthrough (deploy resources).
-    - [ ] Ensure **Ollama** pulls/runs `gpt-oss:20b`.
-- [ ] **1.3 Infrastructure Verification**
+- [x] **1.2 Container Orchestration**
+    - [x] Create `docker-compose.yaml`.
+    - [x] Configure **Qdrant** service (Ports 6333/6334, persistent volume).
+    - [x] Configure **Ollama** service with GPU passthrough (deploy resources).
+    - [x] Ensure **Ollama** pulls/runs `gpt-oss:20b`.
+- [x] **1.3 Infrastructure Verification**
     - [ ] **HALT & VERIFY:** User runs `docker compose up` and curls localhost to ensure services are responding.
 
 ## Phase 2: Sovereign Data Acquisition
