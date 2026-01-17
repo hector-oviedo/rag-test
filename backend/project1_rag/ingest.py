@@ -43,10 +43,11 @@ class IngestionPipeline:
         """Configures global settings for LlamaIndex."""
         print("[INFO] Loading Embedding Model (BAAI/bge-m3)...")
         # High-performance multi-lingual embedding model
-        Settings.embedding_model = HuggingFaceEmbedding(
+        self.embed_model = HuggingFaceEmbedding(
             model_name="BAAI/bge-m3",
             device="cuda"  # Explicitly request CUDA
         )
+        Settings.embed_model = self.embed_model
         
         # We don't need an LLM for ingestion, but to be safe/explicit:
         Settings.llm = None 
@@ -94,7 +95,7 @@ class IngestionPipeline:
         splitter = SemanticSplitterNodeParser(
             buffer_size=1,
             breakpoint_percentile_threshold=95,
-            embed_model=Settings.embedding_model
+            embed_model=self.embed_model
         )
         
         # We process manually to ensure control or just let Index handle it via transformation
@@ -105,6 +106,7 @@ class IngestionPipeline:
             documents,
             storage_context=self.storage_context,
             transformations=[splitter],
+            embed_model=self.embed_model,
             show_progress=True
         )
         
