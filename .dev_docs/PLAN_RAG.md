@@ -41,12 +41,12 @@
     - [x] **HALT & VERIFY:** User runs ingestion script and confirms "Ingestion Complete" logs and Qdrant population. (Verified logic with `scripts/verify_ingestion_logic.py`).
 
 ## Phase 4: The Hybrid Retrieval Engine
-- [ ] **4.1 Query System Setup**
-    - [ ] Create `backend/project1_rag/query.py`.
-- [ ] **4.2 Retrieval Logic**
-    - [ ] Implement **Stage 1**: Hybrid Search (Top 25).
-    - [ ] Implement **Stage 2**: Reranking (`SentenceTransformerRerank`, `BAAI/bge-reranker-v2-m3`), Filter to Top 5.
-    - [ ] Implement **Stage 3**: Synthesis via Ollama (`gpt-oss:20b`).
+- [x] **4.1 Query System Setup**
+    - [x] Create `backend/project1_rag/query.py`.
+- [x] **4.2 Retrieval Logic**
+    - [x] Implement **Stage 1**: Hybrid Search (Top 25).
+    - [x] Implement **Stage 2**: Reranking (`SentenceTransformerRerank`, `BAAI/bge-reranker-v2-m3`), Filter to Top 5.
+    - [x] Implement **Stage 3**: Synthesis via Ollama (`gpt-oss:20b`).
 - [ ] **4.3 End-to-End Verification**
     - [ ] **HALT & VERIFY:** User runs sample query ("What are the export control risks for NVDA?") and validates the answer and sources.
 
