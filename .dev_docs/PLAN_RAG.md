@@ -47,10 +47,13 @@
     - [x] Implement **Stage 1**: Hybrid Search (Top 25).
     - [x] Implement **Stage 2**: Reranking (`SentenceTransformerRerank`, `BAAI/bge-reranker-v2-m3`), Filter to Top 5.
     - [x] Implement **Stage 3**: Synthesis via Ollama (`gpt-oss:20b`).
-- [ ] **4.3 End-to-End Verification**
-    - [ ] **HALT & VERIFY:** User runs sample query ("What are the export control risks for NVDA?") and validates the answer and sources.
+- [x] **4.3 End-to-End Verification**
+    - [x] **HALT & VERIFY:** User runs sample query ("What are the export control risks for NVDA?") and validates the answer and sources. (Verified: System retrieves valid chunks and generates structured report).
 
 ## Phase 5: The Frontend Experience
+- [ ] **5.0 API Layer (Backend)**
+    - [ ] Add `fastapi` and `uvicorn`.
+    - [ ] Create `backend/main_api.py` to expose `RAGQueryEngine` via REST.
 - [ ] **5.1 Frontend Structure**
     - [ ] Ensure `frontend/src/components` exists and is used.
     - [ ] Setup API client in frontend to talk to backend.
