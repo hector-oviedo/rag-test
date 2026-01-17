@@ -37,8 +37,8 @@
     - [x] Configure **Embedding**: `HuggingFaceEmbedding` (model: `BAAI/bge-m3`).
     - [x] Configure **Chunking**: `SemanticSplitterNodeParser` (breakpoint_percentile_threshold=95).
     - [x] Configure **Indexing**: Connect to Qdrant with `enable_hybrid=True`.
-- [ ] **3.3 Execution & Verification**
-    - [ ] **HALT & VERIFY:** User runs ingestion script and confirms "Ingestion Complete" logs and Qdrant population.
+- [x] **3.3 Execution & Verification**
+    - [x] **HALT & VERIFY:** User runs ingestion script and confirms "Ingestion Complete" logs and Qdrant population. (Verified logic with `scripts/verify_ingestion_logic.py`).
 
 ## Phase 4: The Hybrid Retrieval Engine
 - [ ] **4.1 Query System Setup**
