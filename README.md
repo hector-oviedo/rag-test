@@ -1,50 +1,111 @@
-# Sovereign RAG System (2026 Edition)
+# Sovereign RAG: Enterprise SEC Analyst (2026 Edition)
 
-## 📌 Project Overview
-This project is a state-of-the-art **Retrieval-Augmented Generation (RAG)** system designed for "Sovereign AI" environments—fully local, air-gapped, and privacy-centric. It specializes in ingesting, indexing, and reasoning over complex financial documents (specifically SEC 10-K filings) without relying on external cloud APIs.
+> **Status:** ✅ Production Ready (Backend) | 🚧 Frontend In-Progress
+> **Environment:** Fully Local (Air-Gapped Capable) | NVIDIA RTX 3090/4090 Optimized
 
-## 🎯 Purpose
-To demonstrate a production-grade, enterprise-ready architecture for sensitive document analysis using open-source Large Language Models (LLMs) and vector search technologies running entirely on local hardware (e.g., NVIDIA RTX 3090/4090).
+## 📖 Executive Summary
+This project is a reference implementation of a **"Sovereign AI"** architecture. It demonstrates how to build an enterprise-grade **Retrieval-Augmented Generation (RAG)** system that ingests complex financial documents (SEC 10-K filings) and answers expert-level questions **without a single byte of data leaving the local infrastructure**.
 
-## 🛠️ Tech Stack & Justification
+Unlike basic RAG tutorials, this system employs **Advanced RAG** techniques—Hybrid Search (Dense + Sparse), Semantic Chunking, and Cross-Encoder Reranking—to deliver high-precision answers from messy, real-world data.
 
-### Backend & Orchestration
-- **`uv` (Project Manager):** Selected for its blazing speed in dependency resolution and virtual environment management, replacing legacy tools like `pip` and `poetry`.
-- **Python:** The lingua franca of AI/ML development.
-- **Docker & Docker Compose:** Ensures reproducible, containerized deployment of infrastructure services.
+---
 
-### AI & Inference
-- **Ollama:** The standard for local LLM inference. It provides a robust API compatible with OpenAI clients, enabling seamless integration.
-- **Model: `gpt-oss:20b`:** A high-performance open-source model chosen for its balance of reasoning capability and resource efficiency, suitable for single-GPU deployments.
-- **LlamaIndex:** The leading framework for connecting data to LLMs, providing advanced abstractions for ingestion, chunking, and retrieval.
+## 🏗️ The Architecture: Why "Advanced"?
 
-### Vector Database
-- **Qdrant:** A high-performance, Rust-based vector database. It is chosen for its native support of **Hybrid Search** (Dense + Sparse embeddings), which is critical for precise retrieval in technical domains.
+Standard RAG systems often fail on technical documents because they rely solely on simple cosine similarity (Dense Retrieval). Sovereign RAG employs a multi-stage pipeline:
 
-### Frontend
-- **Vite (React):** Chosen for its fast development server and optimized build process.
-- **Architecture:** Component-based, modular design using Hooks to separate logic from UI, ensuring maintainability and scalability.
-- **Key Features:**
-    - **Minimalist Design:** High-quality, clean interface.
-    - **Source Fractions:** Interactive, expandable citations allowing users to verify the exact source of every claim made by the chatbot.
+### 1. The Ingestion Engine (The "2026 Standard")
+- **Source:** SEC EDGAR (Direct download via `sec-edgar-downloader`).
+- **Processing:** `llama-index` with **Semantic Splitter**. Instead of arbitrary fixed-size chunks (e.g., 512 tokens), we use a model to detect semantic breaks in the text, ensuring chunks are complete thoughts.
+- **Embedding:** We generate **two** vectors for every chunk:
+    - **Dense Vector (`BAAI/bge-m3`):** Captures semantic meaning (e.g., "GPU revenue" ≈ "Data Center sales").
+    - **Sparse Vector (`Splade`/`FastEmbed`):** Captures exact keywords (e.g., "H100", "A800").
+- **Storage:** **Qdrant** configured for Hybrid Search.
 
-## 🧪 Testing & Verification Strategy
-We adhere to a strict **"Golden Protocol"** of iterative development:
-1.  ✅ **Infrastructure Verification:** COMPLETED. Containers (Qdrant, Ollama) are healthy and reachable.
-2.  ✅ **Data Integrity:** COMPLETED. Physical downloads of 10-K filings verified.
-3.  **Ingestion Validation:** confirming that text chunks and embeddings are correctly indexed in Qdrant.
-4.  **Retrieval Evaluation:** Testing specific queries (e.g., "Export control risks for NVDA") to verify that the system retrieves relevant context before generating answers.
+### 2. The Retrieval Engine (Hybrid + Rerank)
+When a user asks *"What are the export control risks for NVDA?"*, the system performs:
+1.  **Stage 1: Hybrid Fusion:** It queries Qdrant using both vectors.
+    - *Dense* finds conceptually related risks.
+    - *Sparse* finds exact mentions of "export control".
+    - Result: Top 25 broad candidates.
+2.  **Stage 2: Neural Reranking:** A specialized Cross-Encoder model (`BAAI/bge-reranker-v2-m3`) reads the query and the 25 candidates pairs and scores them by relevance.
+    - Result: Top 5 high-precision context chunks.
+3.  **Stage 3: Synthesis:** The Top 5 chunks are fed to the Local LLM (`gpt-oss:20b` / `Qwen 2.5 14B`).
+
+---
+
+## 🧠 The "Sovereign" Tech Stack
+
+| Component | Technology | Reasoning |
+| :--- | :--- | :--- |
+| **Orchestration** | `uv` (Python) | Blazing fast dependency management, replacing pip/poetry. |
+| **Inference** | **Ollama** | Robust local API server for LLMs. |
+| **Reasoning Model** | `gpt-oss:20b` | A high-performance open-weight model (aliased from `qwen2.5:14b` or `gemma2`) capable of complex synthesis. |
+| **Vector DB** | **Qdrant** | Rust-based, supports Hybrid Search out-of-the-box. |
+| **Embeddings** | `BAAI/bge-m3` | State-of-the-art multilingual embedding model. |
+| **Reranker** | `BAAI/bge-reranker-v2-m3` | Critical for reducing hallucinations by filtering irrelevant context. |
+| **Frontend** | **Vite + React** | Modern, component-based UI (In Development). |
+
+---
+
+## 🛠️ Development Log & Challenges
+
+### 🛑 Challenge 1: The "Raw Data" Reality
+**Issue:** SEC filings (`full-submission.txt`) are messy soup—mixtures of HTML, XML tags, and XBRL data.
+**Impact:** Initial tests showed high retrieval scores but the LLM couldn't answer because the chunks were full of `<DIV>` tags.
+**Solution:** The robust LLM (`gpt-oss:20b`) proved capable of ignoring the XML noise and extracting the text, but future iterations will implement a dedicated HTML parser for cleaner metadata.
+
+### 🛑 Challenge 2: The VRAM Ceiling (OOM)
+**Issue:** Running a 20B parameter model (12GB VRAM) + Embedding Model (1GB) + Reranker (2GB) + Desktop Environment on a single 24GB GPU (RTX 3090) caused `CUDA out of memory`.
+**Solution:** 
+- Strict resource management.
+- Ensuring `ingest.py` (heavy embedding) and `query.py` (heavy inference) don't run simultaneously.
+- Using `fastembed-gpu` for sparse vectors to offload some compute.
+
+### 🛑 Challenge 3: The "GPT-OSS" Identity
+**Issue:** We standardized on the name `gpt-oss:20b` to represent our target performance class, but no such model exists in public registries.
+**Solution:** We adopted a **Model Aliasing** strategy:
+`docker exec -it rag-ollama ollama cp qwen2.5:14b gpt-oss:20b`
+This allows the codebase to remain model-agnostic while we swap the underlying weights for the best open-source model available (Qwen 2.5, Gemma 2, Llama 3).
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Linux Environment
-- NVIDIA GPU with drivers installed
-- Conda environment: `rag-test`
+- Linux / WSL2
+- NVIDIA GPU (24GB VRAM recommended)
 - Docker & Docker Compose
+- `uv` installed
 
-### Installation
-1.  Clone the repository.
-2.  Ensure you are in the `rag-test` environment.
-3.  Run `docker compose up -d` to start the infrastructure.
-4.  Follow the phase-by-phase scripts in `backend/` to ingest data and run queries.
+### 1. Initialize Infrastructure
+```bash
+uv init
+docker compose up -d
+# Ensure model is pulled
+docker exec -it rag-ollama ollama pull qwen2.5:14b
+docker exec -it rag-ollama ollama cp qwen2.5:14b gpt-oss:20b
+```
+
+### 2. Ingest Data (Heavy Lift)
+Downloads 10-Ks and indexes them (Estimated: 30-60 mins).
+```bash
+cd backend
+uv run scripts/download_data.py
+uv run project1_rag/ingest.py
+```
+
+### 3. Query (Interactive CLI)
+```bash
+cd backend
+uv run project1_rag/query.py
+# Ask: "What are the export control risks for NVDA?"
+```
+
+---
+
+## 🎨 Frontend Design Philosophy (Upcoming)
+The UI is designed to be **Transparent** and **Trustworthy**.
+- **Minimalist Aesthetic:** Focus on the answer and the evidence.
+- **Source Fractions:** Every claim is backed by an expandable citation card showing the exact text segment, page number, and retrieval score.
+- **Timeline View:** Visualizing where in the document (Introduction, Risk Factors, Financials) the information came from.
