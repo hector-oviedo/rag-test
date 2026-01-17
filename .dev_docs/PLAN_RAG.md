@@ -30,13 +30,13 @@
     - [ ] **HALT & VERIFY:** User checks file system for valid physical PDF/HTML files.
 
 ## Phase 3: Semantic Ingestion Pipeline (The 2026 Standard)
-- [ ] **3.1 Ingestion Setup**
-    - [ ] Create `backend/project1_rag/ingest.py`.
-    - [ ] Add `llama-index` and related dependencies to backend.
-- [ ] **3.2 Pipeline Logic**
-    - [ ] Configure **Embedding**: `HuggingFaceEmbedding` (model: `BAAI/bge-m3`).
-    - [ ] Configure **Chunking**: `SemanticSplitterNodeParser` (breakpoint_percentile_threshold=95).
-    - [ ] Configure **Indexing**: Connect to Qdrant with `enable_hybrid=True`.
+- [x] **3.1 Ingestion Setup**
+    - [x] Create `backend/project1_rag/ingest.py`.
+    - [x] Add `llama-index` and related dependencies to backend.
+- [x] **3.2 Pipeline Logic**
+    - [x] Configure **Embedding**: `HuggingFaceEmbedding` (model: `BAAI/bge-m3`).
+    - [x] Configure **Chunking**: `SemanticSplitterNodeParser` (breakpoint_percentile_threshold=95).
+    - [x] Configure **Indexing**: Connect to Qdrant with `enable_hybrid=True`.
 - [ ] **3.3 Execution & Verification**
     - [ ] **HALT & VERIFY:** User runs ingestion script and confirms "Ingestion Complete" logs and Qdrant population.
 
