@@ -21,7 +21,7 @@
     - [ ] **HALT & VERIFY:** User runs `docker compose up` and curls localhost to ensure services are responding.
 
 ## Phase 2: Sovereign Data Acquisition
-- [ ] **2.1 Downloader Script**
+- [x] **2.1 Downloader Script**
     - [ ] Add `sec-edgar-downloader` to backend dependencies.
     - [ ] Create `backend/scripts/download_data.py`.
 - [ ] **2.2 Data Fetching**
