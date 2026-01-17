@@ -24,6 +24,9 @@ To demonstrate a production-grade, enterprise-ready architecture for sensitive d
 ### Frontend
 - **Vite (React):** Chosen for its fast development server and optimized build process.
 - **Architecture:** Component-based, modular design using Hooks to separate logic from UI, ensuring maintainability and scalability.
+- **Key Features:**
+    - **Minimalist Design:** High-quality, clean interface.
+    - **Source Fractions:** Interactive, expandable citations allowing users to verify the exact source of every claim made by the chatbot.
 
 ## 🧪 Testing & Verification Strategy
 We adhere to a strict **"Golden Protocol"** of iterative development:

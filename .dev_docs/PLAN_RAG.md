@@ -55,7 +55,8 @@
     - [ ] Ensure `frontend/src/components` exists and is used.
     - [ ] Setup API client in frontend to talk to backend.
 - [ ] **5.2 Interface Implementation**
-    - [ ] Implement Chat Interface.
-    - [ ] Implement Timeline/Source view.
+    - [ ] Implement Chat Interface with Timeline/Source view.
+    - [ ] **Feature:** "Source Fractions" - expandable source citations to verify chatbot answers.
+    - [ ] **Design:** Minimalist, high-quality UI using modular hooks.
 - [ ] **5.3 Frontend Verification**
     - [ ] **HALT & VERIFY:** User launches web UI and interacts.
