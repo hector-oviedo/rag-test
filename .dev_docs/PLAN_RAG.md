@@ -24,9 +24,9 @@
 - [x] **2.1 Downloader Script**
     - [ ] Add `sec-edgar-downloader` to backend dependencies.
     - [ ] Create `backend/scripts/download_data.py`.
-- [ ] **2.2 Data Fetching**
-    - [ ] Implement logic to download 10-K filings for `NVDA` and `MSFT` to a local directory.
-- [ ] **2.3 Data Verification**
+- [x] **2.2 Data Fetching**
+    - [x] Implement logic to download 10-K filings for `NVDA` and `MSFT` to a local directory.
+- [x] **2.3 Data Verification**
     - [ ] **HALT & VERIFY:** User checks file system for valid physical PDF/HTML files.
 
 ## Phase 3: Semantic Ingestion Pipeline (The 2026 Standard)
