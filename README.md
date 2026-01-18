@@ -102,7 +102,9 @@ uv run project1_rag/query.py
 # Ask: "What are the export control risks for NVDA?"
 ```
 
----
+## ⚙️ Configuration
+The system behavior can be tuned in `backend/project1_rag/config.py`:
+- **`CLEAN_HTML_CONTEXT` (Default: True):** Automatically strips HTML/XML tags from SEC filings before sending them to the LLM. This drastically improves the LLM's ability to extract facts from raw EDGAR soup.
 
 ## 🎨 Frontend Design Philosophy (Upcoming)
 The UI is designed to be **Transparent** and **Trustworthy**.
