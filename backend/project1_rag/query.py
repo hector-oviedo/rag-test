@@ -109,14 +109,20 @@ class RAGQueryEngine:
         )
 
         # 3. HTML Cleaner
-        self.cleaner = HTMLCleaner()
+        from project1_rag.config import CLEAN_HTML_CONTEXT
+        
+        postprocessors = [self.reranker]
+        if CLEAN_HTML_CONTEXT:
+            print("[INFO] Enabling HTML Context Cleaner")
+            self.cleaner = HTMLCleaner()
+            postprocessors.append(self.cleaner)
         
         # 4. Chat Engine (Stateful)
         memory = ChatMemoryBuffer.from_defaults(token_limit=4000)
         
         self.chat_engine = ContextChatEngine.from_defaults(
             retriever=self.retriever,
-            node_postprocessors=[self.reranker, self.cleaner], # Clean AFTER reranking (or before? Reranker sees raw but handles it okay usually, cleaner helps LLM)
+            node_postprocessors=postprocessors,
             llm=self.llm,
             memory=memory,
             system_prompt=(
