@@ -82,9 +82,8 @@ This allows the codebase to remain model-agnostic while we swap the underlying w
 ```bash
 uv init
 docker compose up -d
-# Ensure model is pulled
-docker exec -it rag-ollama ollama pull qwen2.5:14b
-docker exec -it rag-ollama ollama cp qwen2.5:14b gpt-oss:20b
+# Ensure model is pulled (Aliased as gpt-oss:20b)
+docker exec -it rag-ollama ollama pull gpt-oss:20b
 ```
 
 ### 2. Ingest Data (Heavy Lift)
