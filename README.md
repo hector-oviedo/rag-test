@@ -30,7 +30,7 @@ When a user asks *"What are the export control risks for NVDA?"*, the system per
     - Result: Top 25 broad candidates.
 2.  **Stage 2: Neural Reranking:** A specialized Cross-Encoder model (`BAAI/bge-reranker-v2-m3`) reads the query and the 25 candidates pairs and scores them by relevance.
     - Result: Top 5 high-precision context chunks.
-3.  **Stage 3: Synthesis:** The Top 5 chunks are fed to the Local LLM (`gpt-oss:20b` / `Qwen 2.5 14B`).
+3.  **Stage 3: Synthesis:** The Top 5 chunks are fed to the Local LLM (`gpt-oss:20b`).
 
 ---
 
@@ -40,7 +40,7 @@ When a user asks *"What are the export control risks for NVDA?"*, the system per
 | :--- | :--- | :--- |
 | **Orchestration** | `uv` (Python) | Blazing fast dependency management, replacing pip/poetry. |
 | **Inference** | **Ollama** | Robust local API server for LLMs. |
-| **Reasoning Model** | `gpt-oss:20b` | A high-performance open-weight model (aliased from `qwen2.5:14b` or `gemma2`) capable of complex synthesis. |
+| **Reasoning Model** | `gpt-oss:20b` | A high-performance open-weight model selected for its complex synthesis capabilities within single-GPU limits. |
 | **Vector DB** | **Qdrant** | Rust-based, supports Hybrid Search out-of-the-box. |
 | **Embeddings** | `BAAI/bge-m3` | State-of-the-art multilingual embedding model. |
 | **Reranker** | `BAAI/bge-reranker-v2-m3` | Critical for reducing hallucinations by filtering irrelevant context. |
@@ -53,7 +53,7 @@ When a user asks *"What are the export control risks for NVDA?"*, the system per
 ### 🛑 Challenge 1: The "Raw Data" Reality
 **Issue:** SEC filings (`full-submission.txt`) are messy soup—mixtures of HTML, XML tags, and XBRL data.
 **Impact:** Initial tests showed high retrieval scores but the LLM couldn't answer because the chunks were full of `<DIV>` tags.
-**Solution:** The robust LLM (`gpt-oss:20b`) proved capable of ignoring the XML noise and extracting the text, but future iterations will implement a dedicated HTML parser for cleaner metadata.
+**Solution:** Implemented a **HTML Cleaner Postprocessor** (via `BeautifulSoup`) to strip tags from the context before synthesis, allowing the LLM to focus on pure text.
 
 ### 🛑 Challenge 2: The VRAM Ceiling (OOM)
 **Issue:** Running a 20B parameter model (12GB VRAM) + Embedding Model (1GB) + Reranker (2GB) + Desktop Environment on a single 24GB GPU (RTX 3090) caused `CUDA out of memory`.
@@ -62,11 +62,9 @@ When a user asks *"What are the export control risks for NVDA?"*, the system per
 - Ensuring `ingest.py` (heavy embedding) and `query.py` (heavy inference) don't run simultaneously.
 - Using `fastembed-gpu` for sparse vectors to offload some compute.
 
-### 🛑 Challenge 3: The "GPT-OSS" Identity
-**Issue:** We standardized on the name `gpt-oss:20b` to represent our target performance class, but no such model exists in public registries.
-**Solution:** We adopted a **Model Aliasing** strategy:
-`docker exec -it rag-ollama ollama cp qwen2.5:14b gpt-oss:20b`
-This allows the codebase to remain model-agnostic while we swap the underlying weights for the best open-source model available (Qwen 2.5, Gemma 2, Llama 3).
+### 🛑 Challenge 3: Context Window Constraints
+**Issue:** Complex SEC filings often require analyzing long sections of text. The default 4096 context window was insufficient for some queries, leading to "I cannot find that" errors even when retrieval worked.
+**Solution:** We increased the Ollama context window to **16,384 tokens**, allowing the model to ingest large, messy chunks of financial data without truncation.
 
 ---
 
@@ -82,7 +80,7 @@ This allows the codebase to remain model-agnostic while we swap the underlying w
 ```bash
 uv init
 docker compose up -d
-# Ensure model is pulled (Aliased as gpt-oss:20b)
+# Ensure model is pulled
 docker exec -it rag-ollama ollama pull gpt-oss:20b
 ```
 
