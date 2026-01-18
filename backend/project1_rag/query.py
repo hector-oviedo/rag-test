@@ -50,7 +50,7 @@ class RAGQueryEngine:
         self.llm = Ollama(
             model="gpt-oss:20b",
             request_timeout=300.0,
-            context_window=4096 
+            context_window=16384 
         )
         Settings.llm = self.llm
 
