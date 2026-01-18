@@ -20,11 +20,28 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.postprocessor import SentenceTransformerRerank
 from llama_index.core.chat_engine import ContextChatEngine
 from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.postprocessor.types import BaseNodePostprocessor
+from llama_index.core.schema import NodeWithScore, QueryBundle
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
+from bs4 import BeautifulSoup
 
+class HTMLCleaner(BaseNodePostprocessor):
+    """
+    Strips HTML tags from nodes to help the LLM focus on text.
+    """
+    def _postprocess_nodes(self, nodes: List[NodeWithScore], query_bundle: Optional[QueryBundle] = None) -> List[NodeWithScore]:
+        for n in nodes:
+            # Use BeautifulSoup to extract text
+            try:
+                soup = BeautifulSoup(n.node.get_content(), "html.parser")
+                clean_text = soup.get_text(separator=" ", strip=True)
+                n.node.set_content(clean_text)
+            except Exception:
+                pass # Fallback to raw if parsing fails
+        return nodes
 
 class RAGQueryEngine:
     """
@@ -90,13 +107,16 @@ class RAGQueryEngine:
             top_n=5,
             device="cuda"
         )
+
+        # 3. HTML Cleaner
+        self.cleaner = HTMLCleaner()
         
         # 4. Chat Engine (Stateful)
         memory = ChatMemoryBuffer.from_defaults(token_limit=4000)
         
         self.chat_engine = ContextChatEngine.from_defaults(
             retriever=self.retriever,
-            node_postprocessors=[self.reranker],
+            node_postprocessors=[self.reranker, self.cleaner], # Clean AFTER reranking (or before? Reranker sees raw but handles it okay usually, cleaner helps LLM)
             llm=self.llm,
             memory=memory,
             system_prompt=(
